@@ -295,9 +295,9 @@ where
 	P::Public: Codec + PartialEq + Clone,
 {
 	let seal = header.digest_mut().pop().ok_or(SealVerificationError::Unsealed)?;
-
+	println!("Seal: {:?}", seal);
 	let sig = seal.as_aura_seal().ok_or(SealVerificationError::BadSeal)?;
-
+	
 	let slot = find_pre_digest::<B, P::Signature>(&header)
 		.map_err(SealVerificationError::InvalidPreDigest)?;
 
@@ -312,8 +312,11 @@ where
 
 		let pre_hash = header.hash();
 
-		// signature verification is removed, so it's always `ok`
-		Ok((header, slot, seal))
+		if P::verify(&sig, pre_hash.as_ref(), expected_author) {
+			Ok((header, slot, seal))
+		} else {
+			Err(SealVerificationError::BadSignature)
+		}
 	}
 }
 
