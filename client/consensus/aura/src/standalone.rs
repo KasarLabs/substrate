@@ -312,11 +312,8 @@ where
 
 		let pre_hash = header.hash();
 
-		if P::verify(&sig, pre_hash.as_ref(), expected_author) {
-			Ok((header, slot, seal))
-		} else {
-			Err(SealVerificationError::BadSignature)
-		}
+		// signature verification is removed, so it's always `ok`
+		Ok((header, slot, seal))
 	}
 }
 
